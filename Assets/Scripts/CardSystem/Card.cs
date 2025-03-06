@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Assets.Scripts.CardSystem
 {
@@ -7,9 +8,9 @@ namespace Assets.Scripts.CardSystem
     {
         public CardData cardData;
 
-        [SerializeField] private Text cardNameText;
-        [SerializeField] private Text manaCostText;
-        [SerializeField] private Text descriptionText;
+        [SerializeField] private TMP_Text cardNameText;
+        [SerializeField] private TMP_Text manaCostText;
+        [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private Image artworkImage;
 
         public void Initialize(CardData data)
