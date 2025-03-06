@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class TurnIndicator
+namespace Assets.Scripts.UI
 {
-    
+    public class TurnIndicator
+    {
+
+    }
 }

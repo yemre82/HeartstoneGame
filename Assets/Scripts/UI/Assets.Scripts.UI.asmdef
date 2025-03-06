@@ -1,0 +1,16 @@
+{
+    "name": "Assets.Scripts.UI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0b95184bfc802f54db54a282863f1b71"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

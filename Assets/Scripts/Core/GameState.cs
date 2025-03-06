@@ -1,9 +1,12 @@
 using UnityEngine;
 
-public enum GameState
+namespace Assets.Scripts.Core
 {
-    NotStarted,
-    PlayerTurn,
-    EnemyTurn,
-    GameOver
+    public enum GameState
+    {
+        NotStarted,
+        PlayerTurn,
+        EnemyTurn,
+        GameOver
+    }
 }

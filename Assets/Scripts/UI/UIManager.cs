@@ -1,22 +1,31 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.Core;
 
-public class UIManager : MonoBehaviour
+namespace Assets.Scripts.UI
 {
-    public TurnManager turnManager;
-    public GameObject menuUI;
-    public GameObject gameUI;
-    public Button startGameButton;
-
-    void Start()
+    public class UIManager : MonoBehaviour
     {
-        startGameButton.onClick.AddListener(StartGame);
-    }
+        public TurnManager turnManager;
+        public GameObject menuUI;
+        public GameObject gameUI;
+        public Button startGameButton;
 
-    public void StartGame()
-    {
-        turnManager.StartGame();
-        menuUI.SetActive(false);
-        gameUI.SetActive(true);
+/*************  ✨ Codeium Command ⭐  *************/
+        /// <summary>
+        /// Listens for the start game button to be clicked and starts the game when it is.
+        /// </summary>
+/******  bfb2a538-fa9e-4ec0-8d26-a46e6dfdea09  *******/
+        void Start()
+        {
+            startGameButton.onClick.AddListener(StartGame);
+        }
+
+        public void StartGame()
+        {
+            turnManager.StartGame();
+            menuUI.SetActive(false);
+            gameUI.SetActive(true);
+        }
     }
 }

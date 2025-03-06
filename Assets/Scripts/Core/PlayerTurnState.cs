@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class PlayerTurnState : TurnState
+namespace Assets.Scripts.Core
 {
-    public override void EnterState(TurnManager manager)
+    public class PlayerTurnState : TurnState
     {
-        Debug.Log("Player's turn started.");
-        manager.CurrentGameState = GameState.PlayerTurn;
-    }
-
-    public override void UpdateState(TurnManager manager)
-    {
-        // Oyuncunun kart oynayıp oynamadığını kontrol edebilirsin
-        if (manager.IsPlayerDone)
+        public override void EnterState(TurnManager manager)
         {
-            manager.SwitchState(new EnemyTurnState());
+            Debug.Log("Player's turn started.");
+            manager.CurrentGameState = GameState.PlayerTurn;
         }
-    }
 
-    public override void ExitState(TurnManager manager)
-    {
-        Debug.Log("Player's turn ended.");
+        public override void UpdateState(TurnManager manager)
+        {
+            // Oyuncunun kart oynayıp oynamadığını kontrol edebilirsin
+            if (manager.IsPlayerDone)
+            {
+                manager.SwitchState(new EnemyTurnState());
+            }
+        }
+
+        public override void ExitState(TurnManager manager)
+        {
+            Debug.Log("Player's turn ended.");
+        }
     }
 }
