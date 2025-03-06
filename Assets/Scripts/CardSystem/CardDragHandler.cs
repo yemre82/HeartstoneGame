@@ -28,14 +28,12 @@ namespace Assets.Scripts.CardSystem
         {
             isDragging = false;
 
-            // Eğer kart sahaya sürüklendiyse, kartı oynat
             if (IsOverPlayArea())
             {
                 PlayCard();
             }
             else
             {
-                // Kartı geri yerine koy
                 transform.position = originalPosition;
                 transform.SetParent(originalParent);
             }
@@ -43,7 +41,6 @@ namespace Assets.Scripts.CardSystem
 
         private bool IsOverPlayArea()
         {
-            // Sahadaki play alanını tespit et
             GameObject playArea = GameObject.FindGameObjectWithTag("PlayArea");
             if (playArea == null) return false;
 
@@ -56,7 +53,7 @@ namespace Assets.Scripts.CardSystem
         private void PlayCard()
         {
             Debug.Log("Card Played: " + gameObject.name);
-            Destroy(gameObject); // Kartı yok et (kart oynandı)
+            Destroy(gameObject);
         }
     }
 
