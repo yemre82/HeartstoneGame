@@ -21,7 +21,7 @@ namespace Assets.Scripts.Core
 
         private IEnumerator EnemyAction(TurnManager manager)
         {
-            yield return new WaitForSeconds(2f); // Düşman hamlesi yapıyormuş gibi bekletme
+            yield return new WaitForSeconds(2f);
             manager.SwitchState(new PlayerTurnState());
         }
     }

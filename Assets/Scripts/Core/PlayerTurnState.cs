@@ -12,7 +12,6 @@ namespace Assets.Scripts.Core
 
         public override void UpdateState(TurnManager manager)
         {
-            // Oyuncunun kart oynayıp oynamadığını kontrol edebilirsin
             if (manager.IsPlayerDone)
             {
                 manager.SwitchState(new EnemyTurnState());
