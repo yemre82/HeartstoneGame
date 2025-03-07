@@ -7,30 +7,31 @@ namespace Assets.Scripts.Core
 {
     public class GameManager : MonoBehaviour
     {
-        public Action<Enemy> OnEnemyCreated;
-        public Action<Player> OnPlayerCreated;
+        public Action<Enemy, Player> OnUsersCreated;
         public Action OnGameStarted;
 
 
-        private EnemyFactory _enemyFactory;
-        private PlayerFactory _playerFactory;
+        public Enemy enemy;
+        public Player player;
+
+        private EnemyFactory enemyFactory;
+        private PlayerFactory playerFactory;
 
         [Inject]
         public void Construct(EnemyFactory enemyFactory, PlayerFactory playerFactory)
         {
-            _enemyFactory = enemyFactory;
-            _playerFactory = playerFactory;
+            this.enemyFactory = enemyFactory;
+            this.playerFactory = playerFactory;
         }
 
         public void StartGame()
         {
             Debug.Log("Game Started! Creating Player and Enemy...");
 
-            Player player = _playerFactory.Create();
-            Enemy enemy = _enemyFactory.Create();
+            player = playerFactory.Create();
+            enemy = enemyFactory.Create();
 
-            OnPlayerCreated?.Invoke(player);
-            OnEnemyCreated?.Invoke(enemy);
+            OnUsersCreated?.Invoke(enemy, player);
 
             OnGameStarted?.Invoke();
 

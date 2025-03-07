@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Assets.Scripts.Players;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Core
 {
@@ -27,6 +28,12 @@ namespace Assets.Scripts.Core
         }
         public bool IsPlayerDone { get; set; }
 
+        [Inject]
+        public void Construct(GameManager gameManager)
+        {
+            this.gameManager = gameManager;
+        }
+
         void Start()
         {
             CurrentGameState = GameState.NotStarted;
@@ -34,18 +41,13 @@ namespace Assets.Scripts.Core
         }
 
         private void SubEvents(){
-            gameManager.OnPlayerCreated += OnPlayerCreated;
-            gameManager.OnEnemyCreated += OnEnemyCreated;
+            gameManager.OnUsersCreated += OnPlayerCreated;
             gameManager.OnGameStarted += StartGame;
         }
 
-        private void OnEnemyCreated(Enemy enemy)
+        private void OnPlayerCreated(Enemy enemy, Player player)
         {
             this.enemy = enemy;
-        }
-
-        private void OnPlayerCreated(Player player)
-        {
             this.player = player;
         }
 
@@ -103,6 +105,16 @@ namespace Assets.Scripts.Core
             {
                 currentState.UpdateState(this, player, enemy);
             }
+        }
+
+        private void UnsubEvents(){
+            gameManager.OnUsersCreated -= OnPlayerCreated;
+            gameManager.OnGameStarted -= StartGame;
+        }
+
+        void OnDestroy()
+        {
+            UnsubEvents();
         }
     }
 }

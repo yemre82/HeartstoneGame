@@ -16,6 +16,8 @@ namespace Assets.Scripts.Core
                 Debug.LogError("GameInstaller: enemyPrefab or playerPrefab is null");
             }
 
+            Container.Bind<GameManager>().FromComponentInHierarchy().AsSingle();
+
 
             Container.BindFactory<Enemy, EnemyFactory>()
                 .FromComponentInNewPrefab(enemyPrefab)

@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Effects;
 using Assets.Scripts.Players;
+using Assets.Scripts.Core;
+using System;
 
 namespace Assets.Scripts.CardSystem
 {
@@ -10,12 +12,9 @@ namespace Assets.Scripts.CardSystem
         private Vector3 originalPosition;
         private Transform originalParent;
         private bool isDragging = false;
-        private Card card;
+        [SerializeField] private Card card;
 
-        private void Start()
-        {
-            card = GetComponent<Card>();
-        }
+
 
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -64,15 +63,20 @@ namespace Assets.Scripts.CardSystem
 
             ICardEffect effect = null;
 
+            if (card.player.canPlay == false)
+            {
+                transform.position = originalPosition;
+                transform.SetParent(originalParent);
+                return;
+            }
+
             if (card.cardData.cardType == CardType.Attack)
             {
-                Enemy enemy = FindFirstObjectByType<Enemy>();
-                effect = new DamageEffect(card.cardData.effectValue, enemy);
+                effect = new DamageEffect(card.cardData.effectValue, card.enemy);
             }
             else if (card.cardData.cardType == CardType.Heal)
             {
-                Player player = FindFirstObjectByType<Player>();
-                effect = new HealEffect(card.cardData.effectValue, player);
+                effect = new HealEffect(card.cardData.effectValue, card.player);
             }
 
             effect?.ApplyEffect();

@@ -7,7 +7,6 @@ namespace Assets.Scripts.UI
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private GameManager gameManager;
-        public TurnManager turnManager;
         public GameObject menuUI;
         public GameObject gameUI;
         public Button startGameButton;
