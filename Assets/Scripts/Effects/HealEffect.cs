@@ -1,5 +1,5 @@
 using UnityEngine;
-using Assets.Scripts.Core;
+using Assets.Scripts.Players;
 
 namespace Assets.Scripts.Effects
 {

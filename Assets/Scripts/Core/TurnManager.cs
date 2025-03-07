@@ -1,12 +1,25 @@
+using System;
+using System.Collections;
+using Assets.Scripts.Players;
 using UnityEngine;
 
 namespace Assets.Scripts.Core
 {
     public class TurnManager : MonoBehaviour
     {
-        private TurnState currentState;
-
+        public Action<GameState> OnGameStateChange;
+        [SerializeField] private TurnState currentState;
         [SerializeField] private GameState currentGameState;
+
+        [SerializeField] private float turnDuration = 10f;
+
+        [SerializeField] private GameManager gameManager;
+
+        public Enemy enemy;
+        public Player player;
+
+        private Coroutine turnTimerCoroutine;
+        private float currentTurnTime;
         public GameState CurrentGameState
         {
             get => currentGameState;
@@ -17,6 +30,23 @@ namespace Assets.Scripts.Core
         void Start()
         {
             CurrentGameState = GameState.NotStarted;
+            SubEvents();
+        }
+
+        private void SubEvents(){
+            gameManager.OnPlayerCreated += OnPlayerCreated;
+            gameManager.OnEnemyCreated += OnEnemyCreated;
+            gameManager.OnGameStarted += StartGame;
+        }
+
+        private void OnEnemyCreated(Enemy enemy)
+        {
+            this.enemy = enemy;
+        }
+
+        private void OnPlayerCreated(Player player)
+        {
+            this.player = player;
         }
 
         public void StartGame()
@@ -30,9 +60,14 @@ namespace Assets.Scripts.Core
 
         public void SwitchState(TurnState newState)
         {
+            if (turnTimerCoroutine != null)
+            {
+                StopCoroutine(turnTimerCoroutine);
+            }
+
             if (currentState != null)
             {
-                currentState.ExitState(this);
+                currentState.ExitState(this, player, enemy);
             }
 
             currentState = newState;
@@ -40,14 +75,33 @@ namespace Assets.Scripts.Core
                                (newState is EnemyTurnState) ? GameState.EnemyTurn :
                                GameState.NotStarted;
 
-            currentState.EnterState(this);
+            OnGameStateChange?.Invoke(CurrentGameState);
+
+            currentState.EnterState(this, player, enemy);
+
+            turnTimerCoroutine = StartCoroutine(TurnTimer());
+        }
+
+        private IEnumerator TurnTimer()
+        {
+            currentTurnTime = turnDuration;
+
+            while (currentTurnTime > 0)
+            {
+                yield return new WaitForSeconds(1f);
+                currentTurnTime--;
+                Debug.Log($"Time Left: {currentTurnTime}");
+            }
+
+            Debug.Log("Turn Time Over! Switching turn...");
+            SwitchState(CurrentGameState == GameState.PlayerTurn ? new EnemyTurnState() : new PlayerTurnState());
         }
 
         void Update()
         {
             if (currentState != null)
             {
-                currentState.UpdateState(this);
+                currentState.UpdateState(this, player, enemy);
             }
         }
     }
