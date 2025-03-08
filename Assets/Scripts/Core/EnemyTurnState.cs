@@ -10,7 +10,7 @@ namespace Assets.Scripts.Core
         {
             Debug.Log("Enemy's turn started.");
             manager.CurrentGameState = GameState.EnemyTurn;
-            manager.StartCoroutine(EnemyAction(manager, player, enemy));
+            CoroutineRunner.Instance.StartCoroutine(EnemyAction(manager, player, enemy));
         }
 
         public override void UpdateState(TurnManager manager, Player player, Enemy enemy) { }

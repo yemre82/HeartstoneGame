@@ -11,5 +11,17 @@ namespace Assets.Scripts.Players
             health += amount;
             Debug.Log($"Player Health: {health}");
         }
+
+        public void TakeDamage(int amount)
+        {
+            health -= amount;
+            Debug.Log($"Player Health: {health}");
+
+            if (health <= 0)
+            {
+                Debug.Log("Player Defeated!");
+                Destroy(gameObject);
+            }
+        }
     }
 }

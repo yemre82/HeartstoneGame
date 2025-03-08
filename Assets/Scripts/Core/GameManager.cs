@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Assets.Scripts.Players;
+using Assets.Scripts.CardSystem;
 using System;
 
 namespace Assets.Scripts.Core
@@ -10,6 +11,8 @@ namespace Assets.Scripts.Core
         public Action<Enemy, Player> OnUsersCreated;
         public Action OnGameStarted;
 
+        public DeckManager deckManager;
+        public TurnManager turnManager;
 
         public Enemy enemy;
         public Player player;
@@ -34,6 +37,12 @@ namespace Assets.Scripts.Core
             OnUsersCreated?.Invoke(enemy, player);
 
             OnGameStarted?.Invoke();
+
+            deckManager.OnEntitiesCreated(enemy, player);
+            deckManager.StartGame();
+
+            turnManager.OnPlayerCreated(enemy, player);
+            turnManager.StartGame();
 
             Debug.Log("Player and Enemy Created Successfully.");
         }

@@ -9,18 +9,18 @@ namespace Assets.Scripts.UI
 {
     public class TurnUI : MonoBehaviour
     {
-        private TurnManager turnManager;
+        private GameManager gameManager;
 
         [SerializeField] private TMP_Text turnTimerText;
         [SerializeField] private TMP_Text turnStateText;
 
 
         [Inject]
-        public void Construct(TurnManager _turnManager)
+        public void Construct(GameManager _gameManager)
         {
-            turnManager = _turnManager;
-            turnManager.OnTurnTimeChange += UpdateTimeLeft;
-            turnManager.OnGameStateChange += UpdateGameState;
+            gameManager = _gameManager;
+            gameManager.turnManager.OnTurnTimeChange += UpdateTimeLeft;
+            gameManager.turnManager.OnGameStateChange += UpdateGameState;
         }
 
         private void UpdateGameState(GameState state)
@@ -43,8 +43,8 @@ namespace Assets.Scripts.UI
 
         void OnDestroy()
         {
-            turnManager.OnTurnTimeChange -= UpdateTimeLeft;
-            turnManager.OnGameStateChange -= UpdateGameState;
+            gameManager.turnManager.OnTurnTimeChange -= UpdateTimeLeft;
+            gameManager.turnManager.OnGameStateChange -= UpdateGameState;
         }
     }
 }

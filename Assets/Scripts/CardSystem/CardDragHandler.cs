@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Effects;
-using Assets.Scripts.Players;
-using Assets.Scripts.Core;
 using System;
 
 namespace Assets.Scripts.CardSystem

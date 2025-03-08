@@ -17,5 +17,11 @@ namespace Assets.Scripts.Players
                 Destroy(gameObject);
             }
         }
+
+        public void Heal(int amount)
+        {
+            health += amount;
+            Debug.Log($"Enemy Health: {health}");
+        }
     }
 }

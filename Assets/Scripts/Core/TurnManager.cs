@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using Assets.Scripts.Players;
 using UnityEngine;
-using Zenject;
 
 namespace Assets.Scripts.Core
 {
-    public class TurnManager : MonoBehaviour
+    [Serializable]
+    public class TurnManager
     {
         public Action<GameState> OnGameStateChange;
         public Action<float> OnTurnTimeChange;
@@ -15,12 +15,10 @@ namespace Assets.Scripts.Core
 
         public float turnDuration = 10f;
 
-        [SerializeField] private GameManager gameManager;
+        private Enemy enemy;
+        private Player player;
 
-        public Enemy enemy;
-        public Player player;
-
-        private Coroutine turnTimerCoroutine;
+        private IEnumerator turnTimerCoroutine;
         public float currentTurnTime;
         public GameState CurrentGameState
         {
@@ -29,24 +27,7 @@ namespace Assets.Scripts.Core
         }
         public bool IsPlayerDone { get; set; }
 
-        [Inject]
-        public void Construct(GameManager gameManager)
-        {
-            this.gameManager = gameManager;
-        }
-
-        void Start()
-        {
-            CurrentGameState = GameState.NotStarted;
-            SubEvents();
-        }
-
-        private void SubEvents(){
-            gameManager.OnUsersCreated += OnPlayerCreated;
-            gameManager.OnGameStarted += StartGame;
-        }
-
-        private void OnPlayerCreated(Enemy enemy, Player player)
+        public void OnPlayerCreated(Enemy enemy, Player player)
         {
             this.enemy = enemy;
             this.player = player;
@@ -65,7 +46,7 @@ namespace Assets.Scripts.Core
         {
             if (turnTimerCoroutine != null)
             {
-                StopCoroutine(turnTimerCoroutine);
+                CoroutineRunner.Instance.StopRoutine(turnTimerCoroutine);
             }
 
             if (currentState != null)
@@ -82,7 +63,8 @@ namespace Assets.Scripts.Core
 
             currentState.EnterState(this, player, enemy);
 
-            turnTimerCoroutine = StartCoroutine(TurnTimer());
+            turnTimerCoroutine = TurnTimer();
+            CoroutineRunner.Instance.StartRoutine(turnTimerCoroutine);
         }
 
         private IEnumerator TurnTimer()
@@ -99,24 +81,6 @@ namespace Assets.Scripts.Core
 
             Debug.Log("Turn Time Over! Switching turn...");
             SwitchState(CurrentGameState == GameState.PlayerTurn ? new EnemyTurnState() : new PlayerTurnState());
-        }
-
-        void Update()
-        {
-            if (currentState != null)
-            {
-                currentState.UpdateState(this, player, enemy);
-            }
-        }
-
-        private void UnsubEvents(){
-            gameManager.OnUsersCreated -= OnPlayerCreated;
-            gameManager.OnGameStarted -= StartGame;
-        }
-
-        void OnDestroy()
-        {
-            UnsubEvents();
         }
     }
 }
