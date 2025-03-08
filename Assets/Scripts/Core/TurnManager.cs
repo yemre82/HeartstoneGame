@@ -9,6 +9,7 @@ namespace Assets.Scripts.Core
     public class TurnManager : MonoBehaviour
     {
         public Action<GameState> OnGameStateChange;
+        public Action<float> OnTurnTimeChange;
         [SerializeField] private TurnState currentState;
         [SerializeField] private GameState currentGameState;
 
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Core
         public Player player;
 
         private Coroutine turnTimerCoroutine;
-        private float currentTurnTime;
+        public float currentTurnTime;
         public GameState CurrentGameState
         {
             get => currentGameState;
@@ -92,6 +93,7 @@ namespace Assets.Scripts.Core
             {
                 yield return new WaitForSeconds(1f);
                 currentTurnTime--;
+                OnTurnTimeChange?.Invoke(currentTurnTime);
                 Debug.Log($"Time Left: {currentTurnTime}");
             }
 

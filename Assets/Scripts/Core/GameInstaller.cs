@@ -6,6 +6,9 @@ namespace Assets.Scripts.Core
 {
     public class GameInstaller : MonoInstaller
     {
+        [SerializeField] private GameManager gameManager;
+        [SerializeField] private TurnManager turnManager;
+
         [SerializeField] private GameObject enemyPrefab;
         [SerializeField] private GameObject playerPrefab;
 
@@ -16,7 +19,8 @@ namespace Assets.Scripts.Core
                 Debug.LogError("GameInstaller: enemyPrefab or playerPrefab is null");
             }
 
-            Container.Bind<GameManager>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<GameManager>().FromInstance(gameManager).AsSingle();
+            Container.Bind<TurnManager>().FromInstance(turnManager).AsSingle();
 
 
             Container.BindFactory<Enemy, EnemyFactory>()

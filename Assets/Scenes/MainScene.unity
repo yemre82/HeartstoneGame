@@ -406,6 +406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aaee2c5a98ba144a8b7f42be053b642, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  player: {fileID: 0}
 --- !u!4 &387059658
 Transform:
   m_ObjectHideFlags: 0
@@ -575,6 +577,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 16e3cfe561907d642a684a40b885701f, type: 2}
   handTransform: {fileID: 708201804}
   cardPrefab: {fileID: 1819289557422390156, guid: 46f8661f1dc92a54da486d2ff6df6657, type: 3}
+  enemy: {fileID: 0}
+  player: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!4 &687890795
 Transform:
   m_ObjectHideFlags: 0
@@ -1033,6 +1038,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57c0abef9fced74898b9a6965f9074d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 387059657}
+  turnManager: {fileID: 774097843}
   enemyPrefab: {fileID: 7988240419923280807, guid: a1fb8ab52c852464eab4bb3154713be1, type: 3}
   playerPrefab: {fileID: 8863441803938641191, guid: 1f071c785fe6610428ede8f33d5fdc77, type: 3}
 --- !u!4 &1889943166
