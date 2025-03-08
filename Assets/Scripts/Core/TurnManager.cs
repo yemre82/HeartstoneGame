@@ -12,7 +12,7 @@ namespace Assets.Scripts.Core
         [SerializeField] private TurnState currentState;
         [SerializeField] private GameState currentGameState;
 
-        [SerializeField] private float turnDuration = 10f;
+        public float turnDuration = 10f;
 
         [SerializeField] private GameManager gameManager;
 

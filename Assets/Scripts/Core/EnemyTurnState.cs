@@ -22,7 +22,7 @@ namespace Assets.Scripts.Core
 
         private IEnumerator EnemyAction(TurnManager manager, Player player, Enemy enemy)
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(manager.turnDuration);
             Debug.Log("Enemy Attacks!");
             manager.SwitchState(new PlayerTurnState());
         }
