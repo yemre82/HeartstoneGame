@@ -1,6 +1,6 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using Zenject;
 using Assets.Scripts.CardSystem;
 using Assets.Scripts.Players;
 using System;
@@ -11,65 +11,111 @@ namespace Assets.Scripts.Core
     public class DeckManager
     {
         public List<CardData> availableCards;
-        public Transform playerHandTransform;
-        public Transform enemyHandTransform;
+        public Transform deckPanel;
+        public Transform playerHandPanel;
+        public Transform enemyHandPanel;
         public GameObject cardPrefab;
 
-        private List<CardData> playerHand = new List<CardData>();
-        private List<CardData> enemyHand = new List<CardData>();
-
+        private Queue<CardData> deck = new Queue<CardData>(); // 20 kartlık deste
         private List<Card> playerCards = new List<Card>();
         private List<Card> enemyCards = new List<Card>();
 
-        [SerializeField] private Enemy enemy;
-        [SerializeField] private Player player;
+        private Enemy enemy;
+        private Player player;
 
         public void OnEntitiesCreated(Enemy enemy, Player player)
         {
             this.enemy = enemy;
             this.player = player;
+        }
 
-            foreach (var card in playerCards)
+        private void GenerateDeck()
+        {
+            List<CardData> shuffledDeck = new List<CardData>();
+
+            for (int i = 0; i < 20; i++) // 20 kartlık deste oluştur
             {
-                card.InjectEnemyAndPlayer(enemy, player);
+                int randomIndex = UnityEngine.Random.Range(0, availableCards.Count);
+                shuffledDeck.Add(availableCards[randomIndex]);
             }
 
-            foreach (var card in enemyCards)
+            shuffledDeck = ShuffleDeck(shuffledDeck);
+            deck = new Queue<CardData>(shuffledDeck);
+        }
+
+        private List<CardData> ShuffleDeck(List<CardData> deckToShuffle)
+        {
+            for (int i = deckToShuffle.Count - 1; i > 0; i--)
             {
-                card.InjectEnemyAndPlayer(enemy, player);
+                int randomIndex = UnityEngine.Random.Range(0, i + 1);
+                CardData temp = deckToShuffle[i];
+                deckToShuffle[i] = deckToShuffle[randomIndex];
+                deckToShuffle[randomIndex] = temp;
+            }
+            return deckToShuffle;
+        }
+
+        private void ShowDeckUI()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
+                newCard.GetComponent<Card>().Initialize(availableCards[i % availableCards.Count]);
+                newCard.transform.localScale = Vector3.one * 0.5f; // Kartları küçük göster
             }
         }
 
         public void StartGame()
         {
-            DrawStartingHand(playerHand, playerCards, playerHandTransform, 3);
-            DrawStartingHand(enemyHand, enemyCards, enemyHandTransform, 3);
+            GenerateDeck();
+            ShowDeckUI();
+            CoroutineRunner.Instance.StartRoutine(DistributeStartingHand());
         }
 
-        public void DrawStartingHand(List<CardData> hand, List<Card> cardObjects, Transform handTransform, int count)
+        private IEnumerator DistributeStartingHand()
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < 5; i++)
             {
-                DrawCard(hand, cardObjects, handTransform);
+                DrawCard(playerHandPanel, playerCards);
+                yield return new WaitForSeconds(0.5f);
+                DrawCard(enemyHandPanel, enemyCards);
+                yield return new WaitForSeconds(0.5f);
             }
         }
 
-        public void DrawCard(List<CardData> hand, List<Card> cardObjects, Transform handTransform)
+        public void DrawCard(Transform handPanel, List<Card> cardObjects)
         {
-            if (availableCards.Count == 0) return;
+            if (deck.Count == 0)
+            {
+                Debug.Log("No more cards in the deck!");
+                return;
+            }
 
-            int randomIndex = UnityEngine.Random.Range(0, availableCards.Count);
-            CardData selectedCard = availableCards[randomIndex];
+            CardData selectedCard = deck.Dequeue();
 
-            hand.Add(selectedCard);
+            GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
+            newCard.GetComponent<Card>().Initialize(selectedCard);
+            newCard.GetComponent<Card>().InjectEnemyAndPlayer(enemy, player);
+            CoroutineRunner.Instance.StartRoutine(MoveCardToHand(newCard, handPanel, cardObjects));
+        }
 
-            GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, handTransform);
+        private IEnumerator MoveCardToHand(GameObject cardObject, Transform targetPanel, List<Card> cardObjects)
+        {
+            Vector3 startPosition = cardObject.transform.position;
+            Vector3 targetPosition = targetPanel.position;
+            float duration = 0.5f;
+            float elapsed = 0;
 
-            Card card = newCard.GetComponent<Card>();
-            card.Initialize(selectedCard);
-            card.InjectEnemyAndPlayer(enemy, player);
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                cardObject.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
+                yield return null;
+            }
 
-            cardObjects.Add(card);
+            cardObject.transform.SetParent(targetPanel);
+            cardObject.transform.localScale = Vector3.one;
+            cardObjects.Add(cardObject.GetComponent<Card>());
         }
     }
 }
