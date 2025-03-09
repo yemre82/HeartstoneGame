@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 namespace Assets.Scripts.Players
 {
     public class Player : MonoBehaviour
     {
+        public Action OnIsDead;
         public bool canPlay = false;
         public int health = 30;
 
@@ -20,6 +22,7 @@ namespace Assets.Scripts.Players
             if (health <= 0)
             {
                 Debug.Log("Player Defeated!");
+                OnIsDead?.Invoke();
                 Destroy(gameObject);
             }
         }

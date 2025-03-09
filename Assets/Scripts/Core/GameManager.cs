@@ -22,6 +22,7 @@ namespace Assets.Scripts.Core
         private PlayerFactory playerFactory;
 
         public bool isPlayerTurn = true;
+        private bool enemyPlayed = false; // Çift çağrıyı önlemek için
 
         [Inject]
         public void Construct(EnemyFactory enemyFactory, PlayerFactory playerFactory)
@@ -38,7 +39,6 @@ namespace Assets.Scripts.Core
             enemy = enemyFactory.Create();
 
             OnUsersCreated?.Invoke(enemy, player);
-
             OnGameStarted?.Invoke();
 
             deckManager.OnEntitiesCreated(enemy, player);
@@ -48,7 +48,6 @@ namespace Assets.Scripts.Core
             turnManager.StartGame();
 
             RegisterEvents();
-
             Debug.Log("Player and Enemy Created Successfully.");
         }
 
@@ -67,6 +66,7 @@ namespace Assets.Scripts.Core
             if (state == GameState.PlayerTurn)
             {
                 isPlayerTurn = true;
+                enemyPlayed = false; // Yeni tur başladığında enemy tekrar oynayabilir
             }
             else
             {
@@ -83,6 +83,8 @@ namespace Assets.Scripts.Core
 
         public void EnemyTurn()
         {
+            if (enemyPlayed) return; // Eğer enemy zaten oynadıysa tekrar oynamasına izin verme
+            enemyPlayed = true;
             StartCoroutine(EnemyAction());
         }
 
@@ -90,14 +92,22 @@ namespace Assets.Scripts.Core
         {
             yield return new WaitForSeconds(1f);
 
-            if (deckManager.GetEnemyCards().Count == 0){
+            if (deckManager.GetEnemyCards().Count == 0)
+            {
                 if (deckManager.HasCardsLeft())
+                {
                     deckManager.PullCard(deckManager.enemyHandPanel, deckManager.GetEnemyCards());
+                    yield return new WaitForSeconds(1f);
+                }
                 else
+                {
                     yield return null;
+                }
             }
 
             Card chosenCard = deckManager.GetEnemyCards()[UnityEngine.Random.Range(0, deckManager.GetEnemyCards().Count)];
+            Debug.Log($"Enemy played: {chosenCard.cardData.cardName}");
+
             deckManager.CardPlayedHandler(chosenCard);
         }
 

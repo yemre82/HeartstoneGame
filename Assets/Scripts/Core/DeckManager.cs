@@ -46,6 +46,27 @@ namespace Assets.Scripts.Core
         {
             this.enemy = enemy;
             this.player = player;
+
+            this.enemy.OnIsDead += OnEnemyDefeated;
+            this.player.OnIsDead += OnPlayerDefeated;
+        }
+
+        private void OnPlayerDefeated()
+        {
+            foreach (Card cards in playerCards)
+            {
+                UnityEngine.Object.Destroy(cards.gameObject);
+            }
+            player.OnIsDead -= OnPlayerDefeated;
+        }
+
+        private void OnEnemyDefeated()
+        {
+            foreach (Card cards in enemyCards)
+            {
+                UnityEngine.Object.Destroy(cards.gameObject);
+            }
+            enemy.OnIsDead -= OnEnemyDefeated;
         }
 
         private void GenerateDeck()
