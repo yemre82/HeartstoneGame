@@ -162,25 +162,99 @@ namespace Assets.Scripts.Core
 
             if (gameManager.isPlayerTurn)
             {
-                if (card.cardData.cardType == CardType.Attack)
+                if (!player.SpendMana(card.cardData.manaCost))
                 {
-                    effect = new DamageEffect(card.cardData.effectValue, enemy, player, true);
+                    card.transform.position = playerHandPanel.position;
+                    return;
                 }
-                else if (card.cardData.cardType == CardType.Heal)
+                if (card.cardData.duration == 0)
                 {
-                    effect = new HealEffect(card.cardData.effectValue, player, enemy, true);
+                    if (card.cardData.cardType == CardType.Attack)
+                    {
+                        effect = new DamageEffect(card.cardData.effectValue, enemy, player, true);
+                    }
+                    else if (card.cardData.cardType == CardType.Heal)
+                    {
+                        effect = new HealEffect(card.cardData.effectValue, player, enemy, true);
+                    }
+                }
+                else
+                {
+                    if (card.cardData.effectType == EffectType.Buff)
+                    {
+                        if (card.cardData.cardType == CardType.Attack)
+                        {
+                            BuffDebuffEffect buff = new BuffDebuffEffect(EffectTypeEnum.Buff, card.cardData.effectValue, 0, card.cardData.duration);
+                            player.ApplyEffect(buff);
+                        }
+                        else if (card.cardData.cardType == CardType.Heal)
+                        {
+                            BuffDebuffEffect buff = new BuffDebuffEffect(EffectTypeEnum.Buff, 0, card.cardData.effectValue, card.cardData.duration);
+                            player.ApplyEffect(buff);
+                        }
+                    }
+                    else if (card.cardData.effectType == EffectType.Debuff)
+                    {
+                        if (card.cardData.cardType == CardType.Attack)
+                        {
+                            BuffDebuffEffect debuff = new BuffDebuffEffect(EffectTypeEnum.Debuff, card.cardData.effectValue, 0, card.cardData.duration);
+                            enemy.ApplyEffect(debuff);
+                        }
+                        else if (card.cardData.cardType == CardType.Heal)
+                        {
+                            BuffDebuffEffect debuff = new BuffDebuffEffect(EffectTypeEnum.Debuff, 0, card.cardData.effectValue, card.cardData.duration);
+                            enemy.ApplyEffect(debuff);
+                        }
+                    }
                 }
                 playerCards.Remove(card);
             }
             else
             {
-                if (card.cardData.cardType == CardType.Attack)
+                if (!enemy.SpendMana(card.cardData.manaCost))
                 {
-                    effect = new DamageEffect(card.cardData.effectValue, enemy, player, false);
+                    card.transform.position = enemyHandPanel.position;
+                    return;
                 }
-                else if (card.cardData.cardType == CardType.Heal)
+                if (card.cardData.duration == 0)
                 {
-                    effect = new HealEffect(card.cardData.effectValue, player, enemy, false);
+                    if (card.cardData.cardType == CardType.Attack)
+                    {
+                        effect = new DamageEffect(card.cardData.effectValue, enemy, player, false);
+                    }
+                    else if (card.cardData.cardType == CardType.Heal)
+                    {
+                        effect = new HealEffect(card.cardData.effectValue, player, enemy, false);
+                    }
+                }
+                else
+                {
+                    if (card.cardData.effectType == EffectType.Buff)
+                    {
+                        if (card.cardData.cardType == CardType.Attack)
+                        {
+                            BuffDebuffEffect buff = new BuffDebuffEffect(EffectTypeEnum.Buff, card.cardData.effectValue, 0, card.cardData.duration);
+                            enemy.ApplyEffect(buff);
+                        }
+                        else if (card.cardData.cardType == CardType.Heal)
+                        {
+                            BuffDebuffEffect buff = new BuffDebuffEffect(EffectTypeEnum.Buff, 0, card.cardData.effectValue, card.cardData.duration);
+                            enemy.ApplyEffect(buff);
+                        }
+                    }
+                    else if (card.cardData.effectType == EffectType.Debuff)
+                    {
+                        if (card.cardData.cardType == CardType.Attack)
+                        {
+                            BuffDebuffEffect debuff = new BuffDebuffEffect(EffectTypeEnum.Debuff, card.cardData.effectValue, 0, card.cardData.duration);
+                            player.ApplyEffect(debuff);
+                        }
+                        else if (card.cardData.cardType == CardType.Heal)
+                        {
+                            BuffDebuffEffect debuff = new BuffDebuffEffect(EffectTypeEnum.Debuff, 0, card.cardData.effectValue, card.cardData.duration);
+                            player.ApplyEffect(debuff);
+                        }
+                    }
                 }
                 enemyCards.Remove(card);
             }

@@ -78,7 +78,6 @@ namespace Assets.Scripts.Core
                 yield return new WaitForSeconds(1f);
                 currentTurnTime--;
                 OnTurnTimeChange?.Invoke(currentTurnTime);
-                Debug.Log($"Time Left: {currentTurnTime}");
             }
 
             Debug.Log("Turn Time Over! Switching turn...");

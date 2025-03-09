@@ -6,6 +6,10 @@ namespace Assets.Scripts.CardSystem
     {
         Attack,
         Heal,
+    }
+
+    public enum EffectType
+    {
         Buff,
         Debuff
     }
@@ -18,6 +22,8 @@ namespace Assets.Scripts.CardSystem
         public string description;
         public Sprite artwork;
         public CardType cardType;
+        public EffectType effectType;
         public int effectValue;
+        public int duration;
     }
 }

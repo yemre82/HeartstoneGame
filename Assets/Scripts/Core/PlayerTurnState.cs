@@ -9,13 +9,14 @@ namespace Assets.Scripts.Core
         {
             Debug.Log("Player's turn started.");
             manager.CurrentGameState = GameState.PlayerTurn;
-            manager.IsPlayerDone = false; // Yeni tur başladığında sıfırla
+            manager.IsPlayerDone = false;
             player.canPlay = true;
+            gameManager.player.GainMana();
         }
 
         public override void UpdateState(TurnManager manager, Player player, Enemy enemy, GameManager gameManager = null)
         {
-            if (manager.IsPlayerDone) // Eğer oyuncu hamle yaptıysa
+            if (manager.IsPlayerDone)
             {
                 Debug.Log("Player made a move! Switching to Enemy Turn...");
                 manager.SwitchState(new EnemyTurnState());
@@ -26,6 +27,7 @@ namespace Assets.Scripts.Core
         public override void ExitState(TurnManager manager, Player player, Enemy enemy, GameManager gameManager = null)
         {
             Debug.Log("Player's turn ended.");
+            gameManager.player.UpdateEffects();
             player.canPlay = false;
         }
     }

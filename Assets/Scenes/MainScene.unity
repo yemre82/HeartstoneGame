@@ -409,6 +409,10 @@ MonoBehaviour:
   deckManager:
     availableCards:
     - {fileID: 11400000, guid: 16e3cfe561907d642a684a40b885701f, type: 2}
+    - {fileID: 11400000, guid: 5dcecbe6e1a4f354687d769c4930d66c, type: 2}
+    - {fileID: 11400000, guid: 08fae9f8d6de24c48b93fe77dd4dbe14, type: 2}
+    - {fileID: 11400000, guid: 546b52166d131444794889d30f768356, type: 2}
+    - {fileID: 11400000, guid: 8db306afa55a7b34db2d0de03df53321, type: 2}
     deckPanel: {fileID: 1825706095}
     playerHandPanel: {fileID: 708201804}
     enemyHandPanel: {fileID: 706493990}
