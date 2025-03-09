@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Core;
+using Assets.Scripts.CardSystem;
 
 namespace Assets.Scripts.UI
 {
@@ -10,6 +11,7 @@ namespace Assets.Scripts.UI
         public GameObject menuUI;
         public GameObject gameUI;
         public Button startGameButton;
+        public Button pullCardButton;
 
         void Start()
         {
@@ -21,6 +23,11 @@ namespace Assets.Scripts.UI
             gameManager.StartGame();
             menuUI.SetActive(false);
             gameUI.SetActive(true);
+        }
+
+        public void PullCard()
+        {
+            gameManager.PullCard();
         }
     }
 }

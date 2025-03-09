@@ -20,6 +20,8 @@ namespace Assets.Scripts.Core
         private EnemyFactory enemyFactory;
         private PlayerFactory playerFactory;
 
+        private bool isPlayerTurn = false;
+
         [Inject]
         public void Construct(EnemyFactory enemyFactory, PlayerFactory playerFactory)
         {
@@ -44,7 +46,42 @@ namespace Assets.Scripts.Core
             turnManager.OnPlayerCreated(enemy, player);
             turnManager.StartGame();
 
+            RegisterEvents();
+
             Debug.Log("Player and Enemy Created Successfully.");
+        }
+
+        private void RegisterEvents()
+        {
+            turnManager.OnGameStateChange += TurnManager_OnGameStateChange;
+        }
+
+        private void UnregisterEvents()
+        {
+            turnManager.OnGameStateChange -= TurnManager_OnGameStateChange;
+        }
+
+        private void TurnManager_OnGameStateChange(GameState state)
+        {
+            if (state == GameState.PlayerTurn)
+            {
+                isPlayerTurn = true;
+            }
+            else
+            {
+                isPlayerTurn = false;
+            }
+        }
+
+        public void PullCard()
+        {
+            if (!isPlayerTurn) return;
+            deckManager.DrawCard(deckManager.playerHandPanel, deckManager.GetPlayerCards());
+        }
+
+        private void OnDestroy()
+        {
+            UnregisterEvents();
         }
     }
 }

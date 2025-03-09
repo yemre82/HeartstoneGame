@@ -16,12 +16,22 @@ namespace Assets.Scripts.Core
         public Transform enemyHandPanel;
         public GameObject cardPrefab;
 
-        private Queue<CardData> deck = new Queue<CardData>(); // 20 kartlık deste
+        private Queue<CardData> deck = new Queue<CardData>();
         private List<Card> playerCards = new List<Card>();
         private List<Card> enemyCards = new List<Card>();
 
         private Enemy enemy;
         private Player player;
+
+        public bool HasCardsLeft()
+        {
+            return deck.Count > 0;
+        }
+
+        public List<Card> GetPlayerCards()
+        {
+            return playerCards;
+        }
 
         public void OnEntitiesCreated(Enemy enemy, Player player)
         {
@@ -33,7 +43,7 @@ namespace Assets.Scripts.Core
         {
             List<CardData> shuffledDeck = new List<CardData>();
 
-            for (int i = 0; i < 20; i++) // 20 kartlık deste oluştur
+            for (int i = 0; i < 20; i++)
             {
                 int randomIndex = UnityEngine.Random.Range(0, availableCards.Count);
                 shuffledDeck.Add(availableCards[randomIndex]);
@@ -61,7 +71,7 @@ namespace Assets.Scripts.Core
             {
                 GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
                 newCard.GetComponent<Card>().Initialize(availableCards[i % availableCards.Count]);
-                newCard.transform.localScale = Vector3.one * 0.5f; // Kartları küçük göster
+                newCard.transform.localScale = Vector3.one * 0.5f;
             }
         }
 
