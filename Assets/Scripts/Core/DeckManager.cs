@@ -15,15 +15,17 @@ namespace Assets.Scripts.Core
         public Transform deckPanel;
         public Transform playerHandPanel;
         public Transform enemyHandPanel;
+        public Transform playAreaPanel; // Oynanan kartların gideceği alan
         public GameObject cardPrefab;
 
         private Queue<Card> deck = new Queue<Card>();
-        private List<GameObject> deckCardsUI = new List<GameObject>(); // DeckPanel içindeki kartları takip eder
+        private List<GameObject> deckCardsUI = new List<GameObject>();
         private List<Card> playerCards = new List<Card>();
         private List<Card> enemyCards = new List<Card>();
 
         private Enemy enemy;
         private Player player;
+        public GameManager gameManager;
 
         public bool HasCardsLeft()
         {
@@ -33,6 +35,11 @@ namespace Assets.Scripts.Core
         public List<Card> GetPlayerCards()
         {
             return playerCards;
+        }
+
+        public List<Card> GetEnemyCards()
+        {
+            return enemyCards;
         }
 
         public void OnEntitiesCreated(Enemy enemy, Player player)
@@ -51,9 +58,9 @@ namespace Assets.Scripts.Core
                 GameObject newCardObject = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
                 Card newCard = newCardObject.GetComponent<Card>();
                 newCard.Initialize(availableCards[randomIndex]);
-                newCardObject.transform.localScale = Vector3.one * 0.5f; // Kartları küçük göster
+                newCardObject.transform.localScale = Vector3.one * 0.5f;
                 newCard.OnCardPlayed += CardPlayedHandler;
-                deckCardsUI.Add(newCardObject); // DeckPanel içindeki UI kartlarını takip et
+                deckCardsUI.Add(newCardObject);
                 shuffledDeck.Add(newCard);
             }
 
@@ -98,9 +105,9 @@ namespace Assets.Scripts.Core
                 return;
             }
 
-            Card card = deck.Dequeue(); // Deck içinden kart çek
-            GameObject cardObject = deckCardsUI[0]; // UI'da ilk sıradaki kartı al
-            deckCardsUI.RemoveAt(0); // UI listesinden çıkar
+            Card card = deck.Dequeue();
+            GameObject cardObject = deckCardsUI[0];
+            deckCardsUI.RemoveAt(0);
             CoroutineRunner.Instance.StartRoutine(MoveCardToHand(cardObject, handPanel, hand));
 
             Debug.Log($"Deck remaining: {deck.Count} cards.");
@@ -125,41 +132,63 @@ namespace Assets.Scripts.Core
             hand.Add(cardObject.GetComponent<Card>());
         }
 
-        private void CardPlayedHandler(Card card)
+        public void CardPlayedHandler(Card card)
         {
-            var cardDragHandler = card.GetComponent<CardDragHandler>();
-            if (player.canPlay == false)
-            {
-                card.transform.position = cardDragHandler.originalPosition;
-                card.transform.SetParent(cardDragHandler.originalParent);
-                return;
-            }
+            Debug.Log($"Card Played: {card.cardData.cardName}");
 
             ICardEffect effect = null;
-            if (card.cardData.cardType == CardType.Attack)
+            Transform targetArea = playAreaPanel;
+
+            if (gameManager.isPlayerTurn)
             {
-                effect = new DamageEffect(card.cardData.effectValue, enemy);
+                if (card.cardData.cardType == CardType.Attack)
+                {
+                    effect = new DamageEffect(card.cardData.effectValue, enemy, player, true);
+                }
+                else if (card.cardData.cardType == CardType.Heal)
+                {
+                    effect = new HealEffect(card.cardData.effectValue, player, enemy, true);
+                }
+                playerCards.Remove(card);
             }
-            else if (card.cardData.cardType == CardType.Heal)
+            else
             {
-                effect = new HealEffect(card.cardData.effectValue, player);
+                if (card.cardData.cardType == CardType.Attack)
+                {
+                    effect = new DamageEffect(card.cardData.effectValue, enemy, player, false);
+                }
+                else if (card.cardData.cardType == CardType.Heal)
+                {
+                    effect = new HealEffect(card.cardData.effectValue, player, enemy, false);
+                }
+                enemyCards.Remove(card);
             }
 
             effect?.ApplyEffect();
             card.OnCardPlayed -= CardPlayedHandler;
+            CoroutineRunner.Instance.StartRoutine(MoveCardToPlayArea(card.gameObject, targetArea));
+        }
 
-            if (playerCards.Contains(card))
+        private IEnumerator MoveCardToPlayArea(GameObject cardObject, Transform targetArea)
+        {
+            Vector3 startPosition = cardObject.transform.position;
+            Vector3 targetPosition = targetArea.position;
+            float duration = 0.5f;
+            float elapsed = 0;
+
+            while (elapsed < duration)
             {
-                playerCards.Remove(card);
-            }
-            else if (enemyCards.Contains(card))
-            {
-                enemyCards.Remove(card);
+                elapsed += Time.deltaTime;
+                cardObject.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsed / duration);
+                yield return null;
             }
 
-            Debug.Log($"Deck remaining: {deck.Count} cards.");
+            cardObject.transform.SetParent(targetArea);
+            cardObject.transform.localScale = Vector3.one;
 
-            GameObject.Destroy(card.gameObject);
+            yield return new WaitForSeconds(1.5f); // Play Area'da kart bir süre kalsın
+
+            GameObject.Destroy(cardObject);
         }
     }
 }

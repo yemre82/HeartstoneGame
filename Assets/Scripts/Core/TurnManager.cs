@@ -13,6 +13,8 @@ namespace Assets.Scripts.Core
         [SerializeField] private TurnState currentState;
         [SerializeField] private GameState currentGameState;
 
+        [SerializeField] private GameManager gameManager;
+
         public float turnDuration = 10f;
 
         private Enemy enemy;
@@ -51,7 +53,7 @@ namespace Assets.Scripts.Core
 
             if (currentState != null)
             {
-                currentState.ExitState(this, player, enemy);
+                currentState.ExitState(this, player, enemy, gameManager);
             }
 
             currentState = newState;
@@ -61,7 +63,7 @@ namespace Assets.Scripts.Core
 
             OnGameStateChange?.Invoke(CurrentGameState);
 
-            currentState.EnterState(this, player, enemy);
+            currentState.EnterState(this, player, enemy, gameManager);
 
             turnTimerCoroutine = TurnTimer();
             CoroutineRunner.Instance.StartRoutine(turnTimerCoroutine);

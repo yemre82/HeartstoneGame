@@ -7,11 +7,20 @@ namespace Assets.Scripts.Effects
     {
         private int healAmount;
         private Player playerTarget;
+        private Enemy enemyTarget;
 
-        public HealEffect(int heal, Player target)
+        public HealEffect(int heal, Player target, Enemy enemy, bool isPlayer = false)
         {
-            healAmount = heal;
-            playerTarget = target;
+            if (isPlayer)
+            {
+                healAmount = heal;
+                playerTarget = target;
+            }
+            else
+            {
+                healAmount = heal;
+                enemyTarget = enemy;
+            }
         }
 
         public void ApplyEffect()
@@ -20,6 +29,11 @@ namespace Assets.Scripts.Effects
             {
                 playerTarget.Heal(healAmount);
                 Debug.Log($"Player healed for {healAmount} HP!");
+            }
+            else if (enemyTarget != null)
+            {
+                enemyTarget.Heal(healAmount);
+                Debug.Log($"Enemy healed for {healAmount} HP!");
             }
         }
     }

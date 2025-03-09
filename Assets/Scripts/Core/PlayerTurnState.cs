@@ -5,7 +5,7 @@ namespace Assets.Scripts.Core
 {
     public class PlayerTurnState : TurnState
     {
-        public override void EnterState(TurnManager manager, Player player, Enemy enemy)
+        public override void EnterState(TurnManager manager, Player player, Enemy enemy, GameManager gameManager = null)
         {
             Debug.Log("Player's turn started.");
             manager.CurrentGameState = GameState.PlayerTurn;
@@ -13,7 +13,7 @@ namespace Assets.Scripts.Core
             player.canPlay = true;
         }
 
-        public override void UpdateState(TurnManager manager, Player player, Enemy enemy)
+        public override void UpdateState(TurnManager manager, Player player, Enemy enemy, GameManager gameManager = null)
         {
             if (manager.IsPlayerDone) // Eğer oyuncu hamle yaptıysa
             {
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Core
             }
         }
 
-        public override void ExitState(TurnManager manager, Player player, Enemy enemy)
+        public override void ExitState(TurnManager manager, Player player, Enemy enemy, GameManager gameManager = null)
         {
             Debug.Log("Player's turn ended.");
             player.canPlay = false;

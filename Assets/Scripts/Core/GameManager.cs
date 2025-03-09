@@ -3,6 +3,7 @@ using Zenject;
 using Assets.Scripts.Players;
 using Assets.Scripts.CardSystem;
 using System;
+using System.Collections;
 
 namespace Assets.Scripts.Core
 {
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Core
         private EnemyFactory enemyFactory;
         private PlayerFactory playerFactory;
 
-        private bool isPlayerTurn = false;
+        public bool isPlayerTurn = true;
 
         [Inject]
         public void Construct(EnemyFactory enemyFactory, PlayerFactory playerFactory)
@@ -70,6 +71,7 @@ namespace Assets.Scripts.Core
             else
             {
                 isPlayerTurn = false;
+                EnemyTurn();
             }
         }
 
@@ -77,6 +79,26 @@ namespace Assets.Scripts.Core
         {
             if (!isPlayerTurn) return;
             deckManager.PullCard(deckManager.playerHandPanel, deckManager.GetPlayerCards());
+        }
+
+        public void EnemyTurn()
+        {
+            StartCoroutine(EnemyAction());
+        }
+
+        private IEnumerator EnemyAction()
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (deckManager.GetEnemyCards().Count == 0){
+                if (deckManager.HasCardsLeft())
+                    deckManager.PullCard(deckManager.enemyHandPanel, deckManager.GetEnemyCards());
+                else
+                    yield return null;
+            }
+
+            Card chosenCard = deckManager.GetEnemyCards()[UnityEngine.Random.Range(0, deckManager.GetEnemyCards().Count)];
+            deckManager.CardPlayedHandler(chosenCard);
         }
 
         private void OnDestroy()
