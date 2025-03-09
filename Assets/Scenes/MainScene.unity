@@ -412,13 +412,17 @@ MonoBehaviour:
     deckPanel: {fileID: 1825706095}
     playerHandPanel: {fileID: 708201804}
     enemyHandPanel: {fileID: 706493990}
+    playAreaPanel: {fileID: 2130958402}
     cardPrefab: {fileID: 1819289557422390156, guid: 46f8661f1dc92a54da486d2ff6df6657, type: 3}
+    gameManager: {fileID: 387059657}
   turnManager:
     currentGameState: 0
+    gameManager: {fileID: 387059657}
     turnDuration: 10
     currentTurnTime: 0
   enemy: {fileID: 0}
   player: {fileID: 0}
+  isPlayerTurn: 0
 --- !u!4 &387059658
 Transform:
   m_ObjectHideFlags: 0
