@@ -76,7 +76,7 @@ namespace Assets.Scripts.Core
         public void PullCard()
         {
             if (!isPlayerTurn) return;
-            deckManager.DrawCard(deckManager.playerHandPanel, deckManager.GetPlayerCards());
+            deckManager.PullCard(deckManager.playerHandPanel, deckManager.GetPlayerCards());
         }
 
         private void OnDestroy()

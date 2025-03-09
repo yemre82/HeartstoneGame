@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Assets.Scripts.CardSystem;
 using Assets.Scripts.Players;
 using System;
+using Assets.Scripts.Effects;
 
 namespace Assets.Scripts.Core
 {
@@ -16,7 +17,8 @@ namespace Assets.Scripts.Core
         public Transform enemyHandPanel;
         public GameObject cardPrefab;
 
-        private Queue<CardData> deck = new Queue<CardData>();
+        private Queue<Card> deck = new Queue<Card>();
+        private List<GameObject> deckCardsUI = new List<GameObject>(); // DeckPanel içindeki kartları takip eder
         private List<Card> playerCards = new List<Card>();
         private List<Card> enemyCards = new List<Card>();
 
@@ -41,44 +43,39 @@ namespace Assets.Scripts.Core
 
         private void GenerateDeck()
         {
-            List<CardData> shuffledDeck = new List<CardData>();
+            List<Card> shuffledDeck = new List<Card>();
 
             for (int i = 0; i < 20; i++)
             {
                 int randomIndex = UnityEngine.Random.Range(0, availableCards.Count);
-                shuffledDeck.Add(availableCards[randomIndex]);
+                GameObject newCardObject = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
+                Card newCard = newCardObject.GetComponent<Card>();
+                newCard.Initialize(availableCards[randomIndex]);
+                newCardObject.transform.localScale = Vector3.one * 0.5f; // Kartları küçük göster
+                newCard.OnCardPlayed += CardPlayedHandler;
+                deckCardsUI.Add(newCardObject); // DeckPanel içindeki UI kartlarını takip et
+                shuffledDeck.Add(newCard);
             }
 
             shuffledDeck = ShuffleDeck(shuffledDeck);
-            deck = new Queue<CardData>(shuffledDeck);
+            deck = new Queue<Card>(shuffledDeck);
         }
 
-        private List<CardData> ShuffleDeck(List<CardData> deckToShuffle)
+        private List<Card> ShuffleDeck(List<Card> deckToShuffle)
         {
             for (int i = deckToShuffle.Count - 1; i > 0; i--)
             {
                 int randomIndex = UnityEngine.Random.Range(0, i + 1);
-                CardData temp = deckToShuffle[i];
+                Card temp = deckToShuffle[i];
                 deckToShuffle[i] = deckToShuffle[randomIndex];
                 deckToShuffle[randomIndex] = temp;
             }
             return deckToShuffle;
         }
 
-        private void ShowDeckUI()
-        {
-            for (int i = 0; i < 20; i++)
-            {
-                GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
-                newCard.GetComponent<Card>().Initialize(availableCards[i % availableCards.Count]);
-                newCard.transform.localScale = Vector3.one * 0.5f;
-            }
-        }
-
         public void StartGame()
         {
             GenerateDeck();
-            ShowDeckUI();
             CoroutineRunner.Instance.StartRoutine(DistributeStartingHand());
         }
 
@@ -86,14 +83,14 @@ namespace Assets.Scripts.Core
         {
             for (int i = 0; i < 5; i++)
             {
-                DrawCard(playerHandPanel, playerCards);
+                PullCard(playerHandPanel, playerCards);
                 yield return new WaitForSeconds(0.5f);
-                DrawCard(enemyHandPanel, enemyCards);
+                PullCard(enemyHandPanel, enemyCards);
                 yield return new WaitForSeconds(0.5f);
             }
         }
 
-        public void DrawCard(Transform handPanel, List<Card> cardObjects)
+        public void PullCard(Transform handPanel, List<Card> hand)
         {
             if (deck.Count == 0)
             {
@@ -101,15 +98,15 @@ namespace Assets.Scripts.Core
                 return;
             }
 
-            CardData selectedCard = deck.Dequeue();
+            Card card = deck.Dequeue(); // Deck içinden kart çek
+            GameObject cardObject = deckCardsUI[0]; // UI'da ilk sıradaki kartı al
+            deckCardsUI.RemoveAt(0); // UI listesinden çıkar
+            CoroutineRunner.Instance.StartRoutine(MoveCardToHand(cardObject, handPanel, hand));
 
-            GameObject newCard = UnityEngine.Object.Instantiate(cardPrefab, deckPanel);
-            newCard.GetComponent<Card>().Initialize(selectedCard);
-            newCard.GetComponent<Card>().InjectEnemyAndPlayer(enemy, player);
-            CoroutineRunner.Instance.StartRoutine(MoveCardToHand(newCard, handPanel, cardObjects));
+            Debug.Log($"Deck remaining: {deck.Count} cards.");
         }
 
-        private IEnumerator MoveCardToHand(GameObject cardObject, Transform targetPanel, List<Card> cardObjects)
+        private IEnumerator MoveCardToHand(GameObject cardObject, Transform targetPanel, List<Card> hand)
         {
             Vector3 startPosition = cardObject.transform.position;
             Vector3 targetPosition = targetPanel.position;
@@ -125,7 +122,44 @@ namespace Assets.Scripts.Core
 
             cardObject.transform.SetParent(targetPanel);
             cardObject.transform.localScale = Vector3.one;
-            cardObjects.Add(cardObject.GetComponent<Card>());
+            hand.Add(cardObject.GetComponent<Card>());
+        }
+
+        private void CardPlayedHandler(Card card)
+        {
+            var cardDragHandler = card.GetComponent<CardDragHandler>();
+            if (player.canPlay == false)
+            {
+                card.transform.position = cardDragHandler.originalPosition;
+                card.transform.SetParent(cardDragHandler.originalParent);
+                return;
+            }
+
+            ICardEffect effect = null;
+            if (card.cardData.cardType == CardType.Attack)
+            {
+                effect = new DamageEffect(card.cardData.effectValue, enemy);
+            }
+            else if (card.cardData.cardType == CardType.Heal)
+            {
+                effect = new HealEffect(card.cardData.effectValue, player);
+            }
+
+            effect?.ApplyEffect();
+            card.OnCardPlayed -= CardPlayedHandler;
+
+            if (playerCards.Contains(card))
+            {
+                playerCards.Remove(card);
+            }
+            else if (enemyCards.Contains(card))
+            {
+                enemyCards.Remove(card);
+            }
+
+            Debug.Log($"Deck remaining: {deck.Count} cards.");
+
+            GameObject.Destroy(card.gameObject);
         }
     }
 }

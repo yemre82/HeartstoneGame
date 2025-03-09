@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Assets.Scripts.Effects;
-using System;
 
 namespace Assets.Scripts.CardSystem
 {
     public class CardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
-        private Vector3 originalPosition;
-        private Transform originalParent;
+
+        public Vector3 originalPosition;
+        public Transform originalParent;
         private bool isDragging = false;
         [SerializeField] private Card card;
 
@@ -59,26 +58,7 @@ namespace Assets.Scripts.CardSystem
         {
             Debug.Log("Card Played: " + card.cardData.cardName);
 
-            ICardEffect effect = null;
-
-            if (card.player.canPlay == false)
-            {
-                transform.position = originalPosition;
-                transform.SetParent(originalParent);
-                return;
-            }
-
-            if (card.cardData.cardType == CardType.Attack)
-            {
-                effect = new DamageEffect(card.cardData.effectValue, card.enemy);
-            }
-            else if (card.cardData.cardType == CardType.Heal)
-            {
-                effect = new HealEffect(card.cardData.effectValue, card.player);
-            }
-
-            effect?.ApplyEffect();
-            Destroy(gameObject);
+            card.PlayCard();
         }
     }
 

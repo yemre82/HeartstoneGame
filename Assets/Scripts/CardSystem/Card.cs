@@ -2,15 +2,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Assets.Scripts.Players;
+using System;
 
 namespace Assets.Scripts.CardSystem
 {
     public class Card : MonoBehaviour
     {
-        public CardData cardData;
+        public Action<Card> OnCardPlayed;
 
-        public Player player;
-        public Enemy enemy;
+        public CardData cardData;
 
         [SerializeField] private TMP_Text cardNameText;
         [SerializeField] private TMP_Text manaCostText;
@@ -26,10 +26,9 @@ namespace Assets.Scripts.CardSystem
             artworkImage.sprite = data.artwork;
         }
 
-        public void InjectEnemyAndPlayer(Enemy enemy, Player player)
+        public void PlayCard()
         {
-            this.player = player;
-            this.enemy = enemy;
+            OnCardPlayed?.Invoke(this);
         }
     }
 }
