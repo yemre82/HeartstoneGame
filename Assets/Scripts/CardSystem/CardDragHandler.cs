@@ -11,6 +11,7 @@ namespace Assets.Scripts.CardSystem
         public Transform originalParent;
         private bool isDragging = false;
         [SerializeField] private Card card;
+        
 
 
 

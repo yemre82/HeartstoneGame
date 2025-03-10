@@ -1,16 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace Assets.Scripts.CardSystem
 {
     public class CardHoverEffect : MonoBehaviour
     {
+        private Vector3 originalScale;
+        private float hoverScaleFactor = 1.2f;
+        private float animationDuration = 0.2f;
+
         private Material originalMaterial;
         private Material hoverMaterial;
         private Image cardImage;
 
         private void Start()
         {
+            originalScale = transform.localScale;
             cardImage = GetComponent<Image>();
             originalMaterial = cardImage.material;
             
@@ -22,11 +28,13 @@ namespace Assets.Scripts.CardSystem
         public void OnPointerEnter()
         {
             cardImage.material = hoverMaterial;
+            transform.DOScale(originalScale * hoverScaleFactor, animationDuration).SetEase(Ease.OutBack);
         }
 
         public void OnPointerExit()
         {
             cardImage.material = originalMaterial;
+            transform.DOScale(originalScale, animationDuration).SetEase(Ease.InBack);
         }
     }
 }

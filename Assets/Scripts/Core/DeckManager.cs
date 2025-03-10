@@ -149,7 +149,6 @@ namespace Assets.Scripts.Core
             }
 
             cardObject.transform.SetParent(targetPanel);
-            cardObject.transform.localScale = Vector3.one;
             hand.Add(cardObject.GetComponent<Card>());
         }
 
@@ -279,9 +278,8 @@ namespace Assets.Scripts.Core
             }
 
             cardObject.transform.SetParent(targetArea);
-            cardObject.transform.localScale = Vector3.one;
 
-            yield return new WaitForSeconds(1.5f); // Play Area'da kart bir süre kalsın
+            yield return new WaitForSeconds(1.5f);
 
             GameObject.Destroy(cardObject);
         }
