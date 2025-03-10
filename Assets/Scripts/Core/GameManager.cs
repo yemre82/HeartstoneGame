@@ -111,6 +111,12 @@ namespace Assets.Scripts.Core
             deckManager.CardPlayedHandler(chosenCard);
         }
 
+        public void EndTurn()
+        {
+            if (turnManager.CurrentGameState != GameState.PlayerTurn) return;
+            turnManager.SwitchState(new EnemyTurnState());
+        }
+
         private void OnDestroy()
         {
             UnregisterEvents();
