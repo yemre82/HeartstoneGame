@@ -2,6 +2,7 @@ using UnityEngine;
 using Zenject;
 using Assets.Scripts.Players;
 using Assets.Scripts.CardSystem;
+using Assets.Scripts.Audio;
 using System;
 using System.Collections;
 
@@ -114,6 +115,8 @@ namespace Assets.Scripts.Core
         public void EndTurn()
         {
             if (turnManager.CurrentGameState != GameState.PlayerTurn) return;
+
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.endTurnSound);
             turnManager.SwitchState(new EnemyTurnState());
         }
 

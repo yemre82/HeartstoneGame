@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Assets.Scripts.Audio;
 
 namespace Assets.Scripts.CardSystem
 {
@@ -18,6 +19,8 @@ namespace Assets.Scripts.CardSystem
             originalPosition = transform.position;
             originalParent = transform.parent;
             isDragging = true;
+
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.cardDrawSound);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -57,6 +60,8 @@ namespace Assets.Scripts.CardSystem
         private void PlayCard()
         {
             Debug.Log("Card Played: " + card.cardData.cardName);
+
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.cardPlaySound);
 
             card.PlayCard();
         }

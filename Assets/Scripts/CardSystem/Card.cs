@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Assets.Scripts.Players;
 using System;
 
 namespace Assets.Scripts.CardSystem
