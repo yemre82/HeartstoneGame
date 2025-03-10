@@ -14,13 +14,11 @@ namespace Assets.Scripts.UI
 
         private void Start()
         {
-            // Kayıtlı ses ayarlarını yükle
             musicToggle.isOn = PlayerPrefs.GetInt("MusicOn", 1) == 1;
             sfxToggle.isOn = PlayerPrefs.GetInt("SFXOn", 1) == 1;
             musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 1.0f);
             sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1.0f);
-
-            // Eventleri bağla
+            
             musicToggle.onValueChanged.AddListener(ToggleMusic);
             sfxToggle.onValueChanged.AddListener(ToggleSFX);
             musicSlider.onValueChanged.AddListener(SetMusicVolume);
