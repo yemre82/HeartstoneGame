@@ -50,7 +50,7 @@ Solution: Each turn, UpdateEffects() is called in TurnManager, reducing the dura
 
 📌 Instructions (How to Run the Prototype)
 💻 PC & Mac
-1️⃣ Open the project in Unity 2021+
+1️⃣ Open the project in Unity 6
 2️⃣ Load the main scene (MainScene.unity).
 3️⃣ Press Play to start the game.
 
