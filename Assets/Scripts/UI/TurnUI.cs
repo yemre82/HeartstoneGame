@@ -29,11 +29,9 @@ namespace Assets.Scripts.UI
         {
             if (state == GameState.PlayerTurn){
                 turnStateText.text = "Your Turn!!";
-                boxOfState.color = Color.green;
             }
             else if (state == GameState.EnemyTurn){
                 turnStateText.text = "Enemy Turn!!";
-                boxOfState.color = Color.red;
             }
             else{
                 turnStateText.text = "";
