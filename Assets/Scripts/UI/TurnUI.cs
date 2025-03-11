@@ -11,6 +11,8 @@ namespace Assets.Scripts.UI
     {
         private GameManager gameManager;
 
+        [SerializeField] private Image boxOfState;
+        [SerializeField] private Image boxOfTimer;
         [SerializeField] private TMP_Text turnTimerText;
         [SerializeField] private TMP_Text turnStateText;
 
@@ -27,9 +29,11 @@ namespace Assets.Scripts.UI
         {
             if (state == GameState.PlayerTurn){
                 turnStateText.text = "Your Turn!!";
+                boxOfState.color = Color.green;
             }
             else if (state == GameState.EnemyTurn){
                 turnStateText.text = "Enemy Turn!!";
+                boxOfState.color = Color.red;
             }
             else{
                 turnStateText.text = "";
@@ -38,6 +42,7 @@ namespace Assets.Scripts.UI
 
         private void UpdateTimeLeft(float timeLeft)
         {
+            boxOfTimer.fillAmount = timeLeft / gameManager.turnManager.turnDuration;
             turnTimerText.text = timeLeft.ToString();
         }
 

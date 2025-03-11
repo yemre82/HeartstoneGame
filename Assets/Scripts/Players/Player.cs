@@ -7,9 +7,13 @@ namespace Assets.Scripts.Players
     public class Player : MonoBehaviour
     {
         public Action OnIsDead;
+        public Action<int> OnHealthChanged;
+        public Action<int> OnManaChanged;
         public bool canPlay = false;
         public int health = 30;
         public int mana = 5; 
+        public int maxHealth = 30;
+        public int maxMana = 10;
         private int attackModifier = 0;
         private int healModifier = 0;
         private List<BuffDebuffEffect> activeEffects = new List<BuffDebuffEffect>();
@@ -68,13 +72,15 @@ namespace Assets.Scripts.Players
         public void Heal(int amount)
         {
             int finalHeal = GetModifiedHeal(amount);
-            health += finalHeal;
+            health = Mathf.Min(health + amount, maxHealth);
+            OnHealthChanged?.Invoke(health);
             Debug.Log($"Player Healed: {finalHeal} (Total Health: {health})");
         }
 
         public void TakeDamage(int amount)
         {
             health -= amount;
+            OnHealthChanged?.Invoke(health);
             Debug.Log($"Player Health: {health}");
 
             if (health <= 0)
@@ -87,7 +93,8 @@ namespace Assets.Scripts.Players
 
         public void GainMana()
         {
-            mana += 5;
+            mana = Mathf.Min(mana + 5, maxMana);
+            OnManaChanged?.Invoke(mana);
             Debug.Log($"Player gained 5 mana. Total Mana: {mana}");
         }
 
@@ -96,6 +103,7 @@ namespace Assets.Scripts.Players
             if (mana >= cost)
             {
                 mana -= cost;
+                OnManaChanged?.Invoke(mana);
                 Debug.Log($"Mana spent: {cost}. Remaining Mana: {mana}");
                 return true;
             }
