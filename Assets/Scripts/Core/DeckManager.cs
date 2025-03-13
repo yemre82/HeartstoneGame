@@ -69,7 +69,7 @@ namespace Assets.Scripts.Core
             enemy.OnIsDead -= OnEnemyDefeated;
         }
 
-        private void GenerateDeck()
+        public void GenerateDeck()
         {
             List<Card> shuffledDeck = new List<Card>();
 
@@ -103,6 +103,23 @@ namespace Assets.Scripts.Core
 
         public void StartGame()
         {
+            foreach (Card card in playerCards)
+            {
+                if (card == null) continue;
+                UnityEngine.Object.Destroy(card.gameObject);
+            }
+            foreach (Card card in enemyCards)
+            {
+                if (card == null) continue;
+                UnityEngine.Object.Destroy(card.gameObject);
+            }
+            foreach (GameObject card in deckCardsUI)
+            {
+                UnityEngine.Object.Destroy(card);
+            }
+            deckCardsUI.Clear();
+            playerCards.Clear();
+            enemyCards.Clear();
             GenerateDeck();
             CoroutineRunner.Instance.StartRoutine(DistributeStartingHand());
         }
@@ -122,6 +139,7 @@ namespace Assets.Scripts.Core
         {
             if (deck.Count == 0)
             {
+                GenerateDeck();
                 Debug.Log("No more cards in the deck!");
                 return;
             }
@@ -154,6 +172,11 @@ namespace Assets.Scripts.Core
 
         public void CardPlayedHandler(Card card)
         {
+            if (card == null)
+            {
+                Debug.LogWarning("Card is null, skipping...");
+                return;
+            }
             Debug.Log($"Card Played: {card.cardData.cardName}");
 
             ICardEffect effect = null;
@@ -260,11 +283,20 @@ namespace Assets.Scripts.Core
 
             effect?.ApplyEffect();
             card.OnCardPlayed -= CardPlayedHandler;
-            CoroutineRunner.Instance.StartRoutine(MoveCardToPlayArea(card.gameObject, targetArea));
+            if (card.gameObject != null)
+            {
+                CoroutineRunner.Instance.StartRoutine(MoveCardToPlayArea(card.gameObject, targetArea));
+            }
         }
 
         private IEnumerator MoveCardToPlayArea(GameObject cardObject, Transform targetArea)
         {
+            if (cardObject == null)
+            {
+                Debug.LogWarning("Card object is already destroyed, skipping movement.");
+                yield break;
+            }
+
             Vector3 startPosition = cardObject.transform.position;
             Vector3 targetPosition = targetArea.position;
             float duration = 0.5f;
@@ -277,11 +309,15 @@ namespace Assets.Scripts.Core
                 yield return null;
             }
 
-            cardObject.transform.SetParent(targetArea);
+            if (cardObject != null)
+            {
+                cardObject.transform.SetParent(targetArea);
 
-            yield return new WaitForSeconds(1.5f);
+                yield return new WaitForSeconds(1.5f);
 
-            GameObject.Destroy(cardObject);
+                GameObject.Destroy(cardObject);
+            }
+
         }
     }
 }

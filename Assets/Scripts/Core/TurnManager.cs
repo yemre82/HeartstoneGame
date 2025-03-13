@@ -33,15 +33,34 @@ namespace Assets.Scripts.Core
         {
             this.enemy = enemy;
             this.player = player;
+            this.enemy.OnIsDead += OnEnemyDefeated;
+            this.player.OnIsDead += OnPlayerDefeated;
+        }
+
+        private void OnEnemyDefeated()
+        {
+            if (turnTimerCoroutine != null)
+            {
+                CoroutineRunner.Instance.StopRoutine(turnTimerCoroutine);
+            }
+            this.enemy.OnIsDead -= OnEnemyDefeated;
+            this.player.OnIsDead -= OnPlayerDefeated;
+        }
+
+        private void OnPlayerDefeated()
+        {
+            if (turnTimerCoroutine != null)
+            {
+                CoroutineRunner.Instance.StopRoutine(turnTimerCoroutine);
+            }
+            this.enemy.OnIsDead -= OnEnemyDefeated;
+            this.player.OnIsDead -= OnPlayerDefeated;
         }
 
         public void StartGame()
         {
-            if (CurrentGameState == GameState.NotStarted)
-            {
-                Debug.Log("Game Started!");
-                SwitchState(new PlayerTurnState());
-            }
+            Debug.Log("Game Started!");
+            SwitchState(new PlayerTurnState());
         }
 
         public void SwitchState(TurnState newState)

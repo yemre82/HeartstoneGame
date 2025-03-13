@@ -11,6 +11,7 @@ namespace Assets.Scripts.Core
     public class GameManager : MonoBehaviour
     {
         public Action<Enemy, Player> OnUsersCreated;
+        public Action<bool> OnGameOver; // true if player won
         public Action OnGameStarted;
 
         public DeckManager deckManager;
@@ -23,7 +24,7 @@ namespace Assets.Scripts.Core
         private PlayerFactory playerFactory;
 
         public bool isPlayerTurn = true;
-        private bool enemyPlayed = false; // Çift çağrıyı önlemek için
+        private bool enemyPlayed = false;
 
         [Inject]
         public void Construct(EnemyFactory enemyFactory, PlayerFactory playerFactory)
@@ -34,10 +35,21 @@ namespace Assets.Scripts.Core
 
         public void StartGame()
         {
+            if (player != null){
+                Destroy(player.gameObject);
+            }
+
+            if (enemy != null){
+                Destroy(enemy.gameObject);
+            }
+
             Debug.Log("Game Started! Creating Player and Enemy...");
 
             player = playerFactory.Create();
             enemy = enemyFactory.Create();
+
+            player.OnIsDead += OnPlayerDefeated;
+            enemy.OnIsDead += OnEnemyDefeated;
 
             OnUsersCreated?.Invoke(enemy, player);
             OnGameStarted?.Invoke();
@@ -50,6 +62,20 @@ namespace Assets.Scripts.Core
 
             RegisterEvents();
             Debug.Log("Player and Enemy Created Successfully.");
+        }
+
+        private void OnEnemyDefeated()
+        {
+            OnGameOver?.Invoke(true);
+            Destroy(player?.gameObject);
+            Destroy(enemy?.gameObject);
+        }
+
+        private void OnPlayerDefeated()
+        {
+            OnGameOver?.Invoke(false);
+            Destroy(player?.gameObject);
+            Destroy(enemy?.gameObject);
         }
 
         private void RegisterEvents()
@@ -97,6 +123,7 @@ namespace Assets.Scripts.Core
             {
                 if (deckManager.HasCardsLeft())
                 {
+                    deckManager.GenerateDeck();
                     deckManager.PullCard(deckManager.enemyHandPanel, deckManager.GetEnemyCards());
                     yield return new WaitForSeconds(1f);
                 }
@@ -111,6 +138,7 @@ namespace Assets.Scripts.Core
 
             deckManager.CardPlayedHandler(chosenCard);
         }
+
 
         public void EndTurn()
         {
